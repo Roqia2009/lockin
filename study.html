@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>LockIn - Study Area</title>
+  <style>
+    :root {
+      --bg-dark: #0b1c18; --bg-card: #122821; --accent: #d2b48c;
+      --accent-light: #f5e7cf; --text-main: #f7f7f2; --text-muted: #b4b7b0;
+      --btn-green: #2f7d5a; --btn-green-dark: #256348; --border-soft: rgba(255,255,255,0.06);
+      --radius-lg: 20px; --radius-md: 12px; --radius-pill: 999px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, sans-serif; }
+    body { background: radial-gradient(circle at top left, #1f3b31 0, #050b09 45%, #020403 100%); color: var(--text-main); min-height: 100vh; }
+    .page { width: 100%; max-width: 1000px; margin: 24px auto; padding: 24px 16px 48px; background: linear-gradient(145deg, rgba(15,35,28,0.96), rgba(5,11,9,0.98)); border-radius: 24px; border: 1px solid rgba(255,255,255,0.09); box-shadow: 0 24px 64px rgba(0,0,0,0.75), 0 0 0 1px rgba(255,255,255,0.02); display: flex; flex-direction: column; min-height: calc(100vh - 48px); }
+    
+    .nav { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 24px; flex-wrap: wrap; }
+    .nav-left { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+    .logo { width: 36px; height: 36px; border-radius: 14px; background: radial-gradient(circle at 30% 20%, #e2fbe8 0, #58b279 36%, #163226 100%); display: flex; align-items: center; justify-content: center; font-weight: 700; color: var(--bg-dark); box-shadow: 0 8px 24px rgba(0,0,0,0.45); flex-shrink: 0; }
+    .brand { display: flex; flex-direction: column; gap: 2px; }
+    .brand-title { font-weight: 700; letter-spacing: 0.03em; font-size: 15px; }
+    .brand-sub { font-size: 11px; color: var(--text-muted); }
+    .nav-main-links { display: flex; gap: 14px; flex-wrap: wrap; font-size: 13px; }
+    .nav-link { color: var(--text-muted); text-decoration: none; padding: 8px 16px; border-radius: var(--radius-md); transition: all 0.2s; }
+    .nav-link:hover { background: rgba(210,180,140,0.1); color: var(--text-main); }
+    .nav-link.active { color: var(--text-main); font-weight: 600; background: rgba(210,180,140,0.15); }
+    
+    .study-nav { display: flex; gap: 8px; margin: 0 auto 32px; background: rgba(18,40,33,0.8); padding: 12px 20px; border-radius: var(--radius-lg); border: 1px solid var(--border-soft); }
+    .study-nav-btn { padding: 10px 20px; border-radius: var(--radius-pill); border: none; background: none; color: var(--text-muted); font-size: 14px; font-weight: 500; cursor: pointer; transition: all 0.2s; }
+    .study-nav-btn.active { background: var(--btn-green); color: white; box-shadow: 0 8px 20px rgba(47,125,90,0.3); }
+    
+    .timer-section { text-align: center; max-width: 500px; margin: 0 auto; }
+    .timer-circle { width: 280px; height: 280px; margin: 0 auto 32px; border-radius: 50%; background: radial-gradient(circle at center, rgba(47,125,90,0.2) 0%, rgba(10,23,18,0.9) 70%); border: 4px solid rgba(255,255,255,0.1); display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; box-shadow: 0 20px 40px rgba(0,0,0,0.6); }
+    .timer-display { font-size: 64px; font-weight: 700; letter-spacing: 0.1em; margin-bottom: 8px; background: linear-gradient(135deg, var(--accent), #f4d03f); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .timer-mode { font-size: 14px; color: var(--accent-light); text-transform: uppercase; letter-spacing: 0.2em; font-weight: 500; }
+    
+    .progress-ring { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 240px; height: 240px; }
+    .progress-ring-circle { stroke-dasharray: 754; stroke-dashoffset: 754; transition: stroke-dashoffset 0.3s ease; stroke: url(#gradient); stroke-width: 8; fill: none; }
+    
+    .session-setup { background: rgba(18,40,33,0.8); padding: 24px; border-radius: var(--radius-lg); margin-bottom: 32px; border: 1px solid var(--border-soft); }
+    .setup-row { display: flex; gap: 16px; margin-bottom: 16px; align-items: end; }
+    .field-group { flex: 1; }
+    .field-label { display: block; font-size: 12px; color: var(--text-muted); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.1em; }
+    .field-input, .field-select { width: 100%; padding: 14px 16px; border-radius: var(--radius-md); border: 1px solid var(--border-soft); background: rgba(6,14,11,0.95); color: var(--text-main); font-size: 16px; }
+    
+    .timer-controls { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
+    .btn-large { padding: 16px 32px; border-radius: var(--radius-pill); border: none; font-size: 16px; font-weight: 600; cursor: pointer; transition: all 0.2s; min-width: 140px; }
+    .btn-start { background: linear-gradient(135deg, var(--btn-green), var(--btn-green-dark)); color: white; box-shadow: 0 14px 30px rgba(47,125,90,0.4); }
+    .btn-start:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 20px 40px rgba(47,125,90,0.5); }
+    .btn-pause, .btn-resume, .btn-reset { background: rgba(210,180,140,0.15); color: var(--accent-light); border: 1px solid rgba(210,180,140,0.4); }
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none !important; }
+    
+    .status-bar { display: flex; justify-content: space-between; align-items: center; padding: 12px 20px; background: rgba(47,125,90,0.2); border-radius: var(--radius-md); margin-top: 24px; }
+    .status-text { font-size: 14px; font-weight: 500; }
+
+    .distraction-alert { 
+      position: fixed; 
+      top: 120px; 
+      right: 24px; 
+      background: rgba(239,68,68,0.95); 
+      color: white; 
+      padding: 16px 20px; 
+      border-radius: var(--radius-lg); 
+      font-size: 16px; 
+      font-weight: 700; 
+      box-shadow: 0 12px 40px rgba(239,68,68,0.4); 
+      min-width: 140px; 
+      text-align: center;
+      display: none;
+      z-index: 1000;
+      animation: shake 0.5s ease-in-out;
+    }
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-8px); }
+      75% { transform: translateX(8px); }
+    }
+
+    @media (max-width: 768px) { 
+      .timer-circle { width: 240px; height: 240px; } 
+      .timer-display { font-size: 48px; } 
+      .setup-row { flex-direction: column; gap: 12px; align-items: stretch; }
+      .distraction-alert { right: 16px; font-size: 14px; padding: 12px 16px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header class="nav">
+      <div class="nav-left">
+        <div class="logo">L</div>
+        <div class="brand">
+          <span class="brand-title">LockIn</span>
+          <span class="brand-sub">AI Study Focus App</span>
+        </div>
+        <nav class="nav-main-links">
+          <a href="index.html" class="nav-link">Overview</a>
+          <a href="study.html" class="nav-link active">Study Area</a>
+          <a href="ai.html" class="nav-link">AI Assistant</a>
+          <a href="store.html" class="nav-link">Store</a>
+          <a href="dashboard.html" class="nav-link">Dashboard</a>
+          <a href="about.html" class="nav-link">About</a>
+        </nav>
+      </div>
+      <div class="nav-right">
+        <a href="dashboard.html" class="nav-link">👋 Dashboard</a>
+      </div>
+    </header>
+
+    <nav class="study-nav">
+      <button class="study-nav-btn active" data-mode="study" onclick="setTimerMode('study', 25)">Study</button>
+      <button class="study-nav-btn" data-mode="break" onclick="setTimerMode('break', 5)">Break</button>
+      <button class="study-nav-btn" data-mode="longbreak" onclick="setTimerMode('longbreak', 15)">Long Break</button>
+    </nav>
+
+    <div class="timer-section">
+      <div class="timer-circle">
+        <svg class="progress-ring" width="240" height="240">
+          <defs>
+            <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#22c55e"/>
+              <stop offset="100%" stop-color="#a3e635"/>
+            </linearGradient>
+          </defs>
+          <circle class="progress-ring-circle" cx="120" cy="120" r="120" stroke-dasharray="754" stroke-dashoffset="754"/>
+        </svg>
+        <div class="timer-display" id="timerDisplay">25:00</div>
+        <div class="timer-mode" id="timerMode">Study Session</div>
+      </div>
+
+      <div class="session-setup" id="sessionSetup">
+        <div class="setup-row">
+          <div class="field-group">
+            <label class="field-label">Subject</label>
+            <select class="field-select" id="subjectSelect">
+              <option value="Math">📐 Mathematics</option>
+              <option value="Chemistry">🧪 Chemistry</option>
+              <option value="Physics">⚛️ Physics</option>
+              <option value="Biology">🧬 Biology</option>
+              <option value="English">📚 English</option>
+              <option value="History">📜 History</option>
+              <option value="Custom">✏️ Custom</option>
+            </select>
+          </div>
+          <div class="field-group">
+            <label class="field-label">Duration (minutes)</label>
+            <input class="field-input" type="number" id="customDuration" value="25" min="5" max="90">
+          </div>
+        </div>
+      </div>
+
+      <div class="timer-controls">
+        <button class="btn-large btn-start" id="startBtn" onclick="controlTimer('start')">▶️ Start</button>
+        <button class="btn-large btn-pause" id="pauseBtn" style="display: none;" onclick="controlTimer('pause')">⏸️ Pause</button>
+        <button class="btn-large btn-resume" id="resumeBtn" style="display: none;" onclick="controlTimer('resume')">▶️ Resume</button>
+        <button class="btn-large btn-reset" id="resetBtn" onclick="resetTimer()" style="display: none;">🔄 Reset</button>
+      </div>
+
+      <div class="status-bar" id="statusBar" style="display: none;">
+        <span class="status-text" id="statusText">Focus mode active</span>
+        <span class="status-text" id="distractionCount">Distractions: 0</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="distraction-alert" id="distractionAlert">
+    ⚠️ <span id="distractionNumber">1</span> Distraction!
+  </div>
+
+  <script>
+    // ====== Local "DB" helpers ======
+    function getUsers() {
+      return JSON.parse(localStorage.getItem('lockin_users') || '[]');
+    }
+    function saveUsers(users) {
+      localStorage.setItem('lockin_users', JSON.stringify(users));
+    }
+    function getCurrentUser() {
+      const raw = localStorage.getItem('lockin_user');
+      if (!raw) return null;
+      return JSON.parse(raw);
+    }
+
+    // ====== Timer logic ======
+    let timerInterval = null;
+    let timeLeft = 25 * 60;
+    let isActive = false;
+    let currentMode = 'study';
+    let distractions = 0;
+    let originalTime = 25 * 60;
+    let currentSubject = 'Math';
+
+    const modes = {
+      study: { minutes: 25, label: 'Study Session' },
+      break: { minutes: 5, label: 'Short Break' },
+      longbreak: { minutes: 15, label: 'Long Break' }
+    };
+
+    // ====== Microphone detection (FIXED & OPTIMIZED) ======
+    let audioCtx, analyser, micData, micSrc;
+    let isMonitoring = false;
+
+    async function initMic() {
+      if (isMonitoring) return;
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        micSrc = audioCtx.createMediaStreamSource(stream);
+        analyser = audioCtx.createAnalyser();
+        analyser.fftSize = 256;
+        micData = new Uint8Array(analyser.frequencyBinCount);
+        micSrc.connect(analyser);
+        isMonitoring = true;
+        console.log('✅ Microphone initialized successfully');
+        monitorMic();
+      } catch (error) {
+        console.log('❌ Microphone access denied:', error);
+      }
+    }
+
+    function monitorMic() {
+      if (!isMonitoring) {
+        requestAnimationFrame(monitorMic);
+        return;
+      }
+
+      if (isActive) {
+        analyser.getByteFrequencyData(micData);
+        const vol = Math.max(...micData);
+        const percent = (vol / 255) * 100;
+
+        // حساسية محسنة (75% للكشف عن الصوت العالي)
+        if (percent > 75) {
+          distractions++;
+          document.getElementById('distractionCount').textContent = `Distractions: ${distractions}`;
+          document.getElementById('distractionNumber').textContent = distractions;
+
+          const alertBox = document.getElementById('distractionAlert');
+          alertBox.style.display = 'block';
+          setTimeout(() => {
+            alertBox.style.display = 'none';
+          }, 3000);
+        }
+      }
+
+      requestAnimationFrame(monitorMic);
+    }
+
+    function setTimerMode(mode, minutes = null) {
+      document.querySelectorAll('.study-nav-btn').forEach(btn => btn.classList.remove('active'));
+      event.target.classList.add('active');
+      
+      currentMode = mode;
+      originalTime = (minutes || modes[mode].minutes) * 60;
+      timeLeft = originalTime;
+      
+      document.getElementById('timerDisplay').textContent = formatTime(timeLeft);
+      document.getElementById('timerMode').textContent = modes[mode].label;
+      document.getElementById('customDuration').value = modes[mode].minutes;
+      updateProgressRing();
+      
+      if (isActive) controlTimer('stop');
+    }
+
+    function controlTimer(action) {
+      switch(action) {
+        case 'start': startTimer(); break;
+        case 'pause': pauseTimer(); break;
+        case 'resume': resumeTimer(); break;
+        case 'stop': stopTimer(); break;
+      }
+    }
+
+    async function startTimer() {
+      if (timerInterval) clearInterval(timerInterval);
+      
+      // ✅ بدء المايك أول ما نبدأ التايمر
+      await initMic();
+      
+      isActive = true;
+      document.getElementById('startBtn').style.display = 'none';
+      document.getElementById('pauseBtn').style.display = 'inline-flex';
+      document.getElementById('resumeBtn').style.display = 'none';
+      document.getElementById('resetBtn').style.display = 'inline-flex';
+      document.getElementById('statusBar').style.display = 'flex';
+      
+      timerInterval = setInterval(updateTimer, 1000);
+    }
+
+    function pauseTimer() {
+      if (timerInterval) {
+        clearInterval(timerInterval);
+        timerInterval = null;
+        document.getElementById('pauseBtn').style.display = 'none';
+        document.getElementById('resumeBtn').style.display = 'inline-flex';
+      }
+    }
+
+    function resumeTimer() {
+      document.getElementById('resumeBtn').style.display = 'none';
+      document.getElementById('pauseBtn').style.display = 'inline-flex';
+      timerInterval = setInterval(updateTimer, 1000);
+    }
+
+    function stopTimer() {
+      if (timerInterval) clearInterval(timerInterval);
+      isActive = false;
+      resetButtons();
+    }
+
+    function updateTimer() {
+      if (timeLeft <= 0) {
+        clearInterval(timerInterval);
+        isActive = false;
+        document.getElementById('statusBar').style.display = 'none';
+
+        // ✅ حساب مدة السيشن وتحديث الإحصائيات الكاملة
+        const sessionMinutes = originalTime / 60;
+        const hours = sessionMinutes / 60;
+        const current = getCurrentUser();
+        
+        if (current) {
+          const users = getUsers();
+          const idx = users.findIndex(u => u.email === current.email);
+          if (idx !== -1) {
+            const user = users[idx];
+            user.stats = user.stats || {
+              todayHours: 0,
+              weekHours: 0,
+              monthHours: 0,
+              streakDays: 0,
+              avgSession: 0,
+              totalPoints: user.points || 0,
+              sessionsCount: 0,
+              distractionsTotal: 0,
+              bestSession: 0
+            };
+
+            // ✅ تحديث جميع الإحصائيات
+            user.stats.todayHours  += hours;
+            user.stats.weekHours   += hours;
+            user.stats.monthHours  += hours;
+            user.stats.sessionsCount += 1;
+            user.stats.avgSession = 
+              ((user.stats.avgSession * (user.stats.sessionsCount - 1)) + hours) / user.stats.sessionsCount;
+            
+            // ✅ نقاط بناءً على الوقت والـdistractions
+            const points = Math.round(sessionMinutes) - (distractions * 2);
+            user.stats.totalPoints += Math.max(points, 0);
+
+            // ✅ إحصائيات الـdistractions وأفضل جلسة
+            user.stats.distractionsTotal += distractions;
+            if (hours > user.stats.bestSession) {
+              user.stats.bestSession = hours;
+            }
+
+            users[idx] = user;
+            saveUsers(users);
+            localStorage.setItem('lockin_user', JSON.stringify(user));
+            
+            console.log(`✅ Session saved: ${hours.toFixed(1)}h, ${distractions} distractions, ${points} points`);
+          }
+        }
+
+        alert(`🎉 ${modes[currentMode].label} completed!\n⏱️ Time: ${sessionMinutes}min\n⚠️ Distractions: ${distractions}\n⭐ Points: ${Math.max(points, 0)}`);
+        resetTimer();
+        return;
+      }
+      
+      timeLeft--;
+      document.getElementById('timerDisplay').textContent = formatTime(timeLeft);
+      updateProgressRing();
+    }
+
+    function resetTimer() {
+      stopTimer();
+      currentSubject = document.getElementById('subjectSelect').value;
+      const duration = parseInt(document.getElementById('customDuration').value) || modes[currentMode].minutes;
+      timeLeft = duration * 60;
+      originalTime = timeLeft;
+      document.getElementById('timerDisplay').textContent = formatTime(timeLeft);
+      distractions = 0;
+      document.getElementById('distractionCount').textContent = 'Distractions: 0';
+      updateProgressRing();
+    }
+
+    function resetButtons() {
+      document.getElementById('startBtn').style.display = 'inline-flex';
+      document.getElementById('pauseBtn').style.display = 'none';
+      document.getElementById('resumeBtn').style.display = 'none';
+      document.getElementById('resetBtn').style.display = 'none';
+      document.getElementById('statusBar').style.display = 'none';
+    }
+
+    function formatTime(seconds) {
+      const mins = Math.floor(seconds / 60);
+      const secs = seconds % 60;
+      return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    }
+
+    function updateProgressRing() {
+      const circumference = 754;
+      const offset = circumference - (timeLeft / originalTime) * circumference;
+      document.querySelector('.progress-ring-circle').style.strokeDashoffset = offset;
+    }
+
+    // Event Listeners
+    document.getElementById('customDuration').addEventListener('change', function() {
+      if (!isActive) {
+        timeLeft = parseInt(this.value) * 60;
+        originalTime = timeLeft;
+        document.getElementById('timerDisplay').textContent = formatTime(timeLeft);
+        updateProgressRing();
+      }
+    });
+
+    document.getElementById('subjectSelect').addEventListener('change', function() {
+      currentSubject = this.value === 'Custom' ? 
+        prompt('Enter custom subject:') || 'Custom Study' : this.value;
+    });
+
+    // Initialize
+    updateProgressRing();
+  </script>
+</body>
+</html>

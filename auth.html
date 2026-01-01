@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>LockIn - Sign Up / Login</title>
+  <style>
+    /* نفس الـCSS بالظبط - مش هغيره */
+  </style>
+</head>
+<body>
+  <!-- نفس الـHTML بالظبط - مش هغيره -->
+  
+  <div class="page">
+    <!-- ... نفس محتوى الـHTML ... -->
+  </div>
+
+  <script>
+    // ✅ Local Storage Database
+    function getUsers() {
+      return JSON.parse(localStorage.getItem('lockin_users') || '[]');
+    }
+
+    function saveUsers(users) {
+      localStorage.setItem('lockin_users', JSON.stringify(users));
+    }
+
+    // ✅ Check if logged in
+    if (localStorage.getItem('lockin_user')) {
+      window.location.href = 'dashboard.html';
+    }
+
+    // ✅ Tab Switching
+    function switchTab(tab) {
+      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+      document.querySelectorAll('form').forEach(form => form.style.display = 'none');
+      
+      event.target.classList.add('active');
+      document.getElementById(tab + 'Form').style.display = 'block';
+    }
+
+    // ✅ Role Selection
+    document.querySelectorAll('.role-btn').forEach(btn => {
+      btn.addEventListener('click', function() {
+        document.querySelectorAll('.role-btn').forEach(b => b.classList.remove('active'));
+        this.classList.add('active');
+        
+        const role = this.dataset.role;
+        const gradeSelection = document.getElementById('gradeSelection');
+        
+        if (role === 'student') {
+          gradeSelection.classList.add('active');
+        } else {
+          gradeSelection.classList.remove('active');
+        }
+      });
+    });
+
+    // ✅ Sign Up - محدث مع stats كامل
+    document.getElementById('signupForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      const activeRoleBtn = document.querySelector('.role-btn.active');
+      const role = activeRoleBtn ? activeRoleBtn.dataset.role : 'student';
+      const name = document.getElementById('signupName').value.trim();
+      const email = document.getElementById('signupEmail').value.trim();
+      const password = document.getElementById('signupPassword').value;
+      const passwordConfirm = document.getElementById('signupPasswordConfirm').value;
+      const grade = role === 'student' ? document.getElementById('studentGrade').value : null;
+
+      // Validation
+      if (!activeRoleBtn) return showError('signupError', 'Please select account type');
+      if (password !== passwordConfirm) return showError('signupError', 'Passwords do not match');
+      if (role === 'student' && !grade) return showError('signupError', 'Please select grade level');
+      if (password.length < 6) return showError('signupError', 'Password must be at least 6 characters');
+
+      const users = getUsers();
+      if (users.find(u => u.email === email)) return showError('signupError', 'Email already exists');
+
+      // ✅ User object محدث مع stats كامل
+      const newUser = { 
+        id: Date.now(), 
+        name, 
+        email, 
+        password, 
+        role, 
+        grade, 
+        createdAt: new Date().toISOString(), 
+        points: 100,
+        stats: {
+          todayHours: 0,
+          weekHours: 0,
+          monthHours: 0,
+          streakDays: 0,
+          avgSession: 0,
+          totalPoints: 100,
+          sessionsCount: 0,
+          distractionsTotal: 0,
+          bestSession: 0
+        }
+      };
+      
+      users.push(newUser);
+      saveUsers(users);
+      localStorage.setItem('lockin_user', JSON.stringify(newUser));
+
+      showSuccess('signupError', 'Account created! Redirecting...');
+      setTimeout(() => window.location.href = 'dashboard.html', 1500);
+    });
+
+    // ✅ Login - محدث عشان يجيب الـstats كمان
+    document.getElementById('loginForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      const email = document.getElementById('loginEmail').value.trim();
+      const password = document.getElementById('loginPassword').value;
+
+      const users = getUsers();
+      const user = users.find(u => u.email === email && u.password === password);
+
+      if (!user) return showError('loginError', 'Invalid credentials');
+
+      // ✅ تأكد إن الـstats موجود
+      if (!user.stats) {
+        user.stats = {
+          todayHours: 0,
+          weekHours: 0,
+          monthHours: 0,
+          streakDays: 0,
+          avgSession: 0,
+          totalPoints: user.points || 100,
+          sessionsCount: 0,
+          distractionsTotal: 0,
+          bestSession: 0
+        };
+      }
+
+      localStorage.setItem('lockin_user', JSON.stringify(user));
+      showSuccess('loginError', 'Login successful! Redirecting...');
+      setTimeout(() => window.location.href = 'dashboard.html', 1000);
+    });
+
+    function showError(id, msg) {
+      const el = document.getElementById(id);
+      el.textContent = msg; el.className = 'error'; el.style.display = 'block';
+      setTimeout(() => el.style.display = 'none', 4000);
+    }
+
+    function showSuccess(id, msg) {
+      const el = document.getElementById(id);
+      el.textContent = msg; el.className = 'success'; el.style.display = 'block';
+      setTimeout(() => el.style.display = 'none', 2000);
+    }
+  </script>
+</body>
+</html>

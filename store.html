@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>LockIn - Store</title>
+  <style>
+    :root {
+      --bg-dark: #0b1c18; --bg-card: #122821; --accent: #d2b48c;
+      --accent-light: #f5e7cf; --text-main: #f7f7f2; --text-muted: #b4b7b0;
+      --btn-green: #2f7d5a; --btn-green-dark: #256348; --border-soft: rgba(255,255,255,0.06);
+      --radius-lg: 20px; --radius-md: 12px; --radius-pill: 999px;
+      --ai-blue: #3b82f6; --store-gold: #ffd700;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, sans-serif; }
+    body { background: radial-gradient(circle at top left, #1f3b31 0, #050b09 45%, #020403 100%); color: var(--text-main); min-height: 100vh; }
+    .page { width: 100%; max-width: 1100px; margin: 24px auto; padding: 24px 16px 48px; background: linear-gradient(145deg, rgba(15,35,28,0.96), rgba(5,11,9,0.98)); border-radius: 24px; border: 1px solid rgba(255,255,255,0.09); box-shadow: 0 24px 64px rgba(0,0,0,0.75); display: flex; flex-direction: column; height: calc(100vh - 48px); }
+    
+    .nav { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 24px; flex-wrap: wrap; }
+    .nav-left { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+    .logo { width: 36px; height: 36px; border-radius: 14px; background: radial-gradient(circle at 30% 20%, #e2fbe8 0, #58b279 36%, #163226 100%); display: flex; align-items: center; justify-content: center; font-weight: 700; color: var(--bg-dark); box-shadow: 0 8px 24px rgba(0,0,0,0.45); flex-shrink: 0; }
+    .brand { display: flex; flex-direction: column; gap: 2px; }
+    .brand-title { font-weight: 700; letter-spacing: 0.03em; font-size: 15px; }
+    .nav-main-links { display: flex; gap: 14px; flex-wrap: wrap; font-size: 13px; }
+    .nav-link { color: var(--text-muted); text-decoration: none; padding: 8px 16px; border-radius: var(--radius-md); transition: all 0.2s; }
+    .nav-link:hover { background: rgba(210,180,140,0.1); color: var(--text-main); }
+    .nav-link.active { color: var(--text-main); font-weight: 600; background: rgba(210,180,140,0.15); }
+    
+    .store-header { text-align: center; margin-bottom: 40px; }
+    .store-title { font-size: 36px; font-weight: 700; background: linear-gradient(135deg, var(--store-gold), var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 12px; }
+    .store-subtitle { color: var(--text-muted); font-size: 18px; }
+    
+    .store-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 24px; margin-bottom: 40px; }
+    
+    .store-box { 
+      background: rgba(18,40,33,0.8); 
+      border: 2px solid var(--border-soft); 
+      border-radius: var(--radius-lg); 
+      padding: 32px; 
+      text-align: center; 
+      transition: all 0.3s; 
+      cursor: pointer; 
+      position: relative; 
+      overflow: hidden;
+    }
+    .store-box::before {
+      content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%; 
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent); 
+      transition: left 0.5s;
+    }
+    .store-box:hover::before { left: 100%; }
+    .store-box:hover { 
+      border-color: var(--store-gold); 
+      transform: translateY(-8px); 
+      box-shadow: 0 24px 48px rgba(255,215,0,0.2);
+    }
+    .store-box-icon { font-size: 48px; margin-bottom: 20px; }
+    .store-box-title { font-size: 24px; font-weight: 700; color: var(--text-main); margin-bottom: 8px; }
+    .store-box-price { font-size: 14px; color: var(--store-gold); font-weight: 600; }
+    
+    .points-display { background: rgba(255,215,0,0.1); border: 1px solid var(--store-gold); border-radius: var(--radius-md); padding: 16px; text-align: center; margin: 24px 0; }
+    .points-count { font-size: 36px; font-weight: 700; color: var(--store-gold); }
+    .points-label { color: var(--text-muted); font-size: 14px; }
+    
+    @media (max-width: 768px) { .store-grid { grid-template-columns: 1fr; } .nav-main-links { display: none; } }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header class="nav">
+      <div class="nav-left">
+        <div class="logo">L</div>
+        <div class="brand">
+          <span class="brand-title">LockIn</span>
+          <span class="brand-sub">AI Study Focus App</span>
+        </div>
+        <nav class="nav-main-links">
+          <a href="index.html" class="nav-link">Overview</a>
+          <a href="study.html" class="nav-link">Study Area</a>
+          <a href="ai.html" class="nav-link">AI Assistant</a>
+          <a href="store.html" class="nav-link active">Store</a>
+          <a href="dashboard.html" class="nav-link">Dashboard</a>
+          <a href="about.html" class="nav-link">About</a>
+        </nav>
+      </div>
+      <div class="nav-right">
+        <a href="study.html" class="nav-link">📚 Study Now</a>
+      </div>
+    </header>
+
+    <div class="store-header">
+      <h1 class="store-title">LockIn Store</h1>
+      <p class="store-subtitle">Unlock premium tools & themes with your points! 🛒</p>
+    </div>
+
+    <!-- ✅ نقاطك الحالية -->
+    <div class="points-display">
+      <div class="points-count" id="currentPoints">1,250</div>
+      <div class="points-label">Your Points</div>
+    </div>
+
+    <!-- ✅ مكتبة الشروق -->
+    <div class="store-grid">
+      <div class="store-box" onclick="openShrooqLibrary()">
+        <div class="store-box-icon">📚</div>
+        <div class="store-box-title">مكتبة الشروق</div>
+        <div class="store-box-price">الفئوم - Premium Library</div>
+      </div>
+
+      <!-- ✅ Themes -->
+      <div class="store-box" onclick="openThemes()">
+        <div class="store-box-icon">🎨</div>
+        <div class="store-box-title">Themes</div>
+        <div class="store-box-price">Unlock Custom Colors</div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let currentPoints = 1250;
+
+    function openShrooqLibrary() {
+      window.location.href = 'shrooq-library.html';
+    }
+
+    function openThemes() {
+      window.location.href = 'themes.html';
+    }
+
+    // Update points display
+    document.getElementById('currentPoints').textContent = currentPoints.toLocaleString();
+  </script>
+</body>
+</html>

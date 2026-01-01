@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>LockIn - AI Assistant</title>
+  <style>
+    :root {
+      --bg-dark: #0b1c18; --bg-card: #122821; --accent: #d2b48c;
+      --accent-light: #f5e7cf; --text-main: #f7f7f2; --text-muted: #b4b7b0;
+      --btn-green: #2f7d5a; --btn-green-dark: #256348; --border-soft: rgba(255,255,255,0.06);
+      --radius-lg: 20px; --radius-md: 12px; --radius-pill: 999px;
+      --ai-blue: #3b82f6; --ai-bg: rgba(59,130,246,0.1);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, sans-serif; }
+    body { background: radial-gradient(circle at top left, #1f3b31 0, #050b09 45%, #020403 100%); color: var(--text-main); min-height: 100vh; }
+    .page { width: 100%; max-width: 1100px; margin: 24px auto; padding: 24px 16px 48px; background: linear-gradient(145deg, rgba(15,35,28,0.96), rgba(5,11,9,0.98)); border-radius: 24px; border: 1px solid rgba(255,255,255,0.09); box-shadow: 0 24px 64px rgba(0,0,0,0.75), 0 0 0 1px rgba(255,255,255,0.02); display: flex; flex-direction: column; height: calc(100vh - 48px); }
+    
+    .nav { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 24px; flex-wrap: wrap; }
+    .nav-left { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+    .logo { width: 36px; height: 36px; border-radius: 14px; background: radial-gradient(circle at 30% 20%, #e2fbe8 0, #58b279 36%, #163226 100%); display: flex; align-items: center; justify-content: center; font-weight: 700; color: var(--bg-dark); box-shadow: 0 8px 24px rgba(0,0,0,0.45); flex-shrink: 0; }
+    .brand { display: flex; flex-direction: column; gap: 2px; }
+    .brand-title { font-weight: 700; letter-spacing: 0.03em; font-size: 15px; }
+    .nav-main-links { display: flex; gap: 14px; flex-wrap: wrap; font-size: 13px; }
+    .nav-link { color: var(--text-muted); text-decoration: none; padding: 8px 16px; border-radius: var(--radius-md); transition: all 0.2s; }
+    .nav-link:hover { background: rgba(210,180,140,0.1); color: var(--text-main); }
+    .nav-link.active { color: var(--text-main); font-weight: 600; background: rgba(210,180,140,0.15); }
+    
+    .ai-header { text-align: center; margin-bottom: 24px; }
+    .ai-title { font-size: 32px; font-weight: 700; background: linear-gradient(135deg, var(--ai-blue), #60a5fa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin-bottom: 8px; }
+    .ai-subtitle { color: var(--text-muted); font-size: 16px; max-width: 600px; margin: 0 auto; }
+    
+    .chat-container { flex: 1; display: flex; flex-direction: column; background: rgba(18,40,33,0.6); border-radius: var(--radius-lg); border: 1px solid var(--border-soft); overflow: hidden; margin-bottom: 24px; }
+    .chat-messages { flex: 1; padding: 24px; overflow-y: auto; max-height: 60vh; }
+    .message { display: flex; margin-bottom: 24px; animation: slideIn 0.4s ease; }
+    .message.user { flex-direction: row-reverse; }
+    .message.ai { flex-direction: row; }
+    .message-bubble { max-width: 80%; padding: 20px 24px; border-radius: var(--radius-lg); position: relative; line-height: 1.7; }
+    .message.user .message-bubble { background: linear-gradient(135deg, var(--btn-green), var(--btn-green-dark)); color: white; border-bottom-right-radius: var(--radius-md); }
+    .message.ai .message-bubble { background: var(--ai-bg); color: var(--text-main); border: 1px solid rgba(59,130,246,0.3); border-bottom-left-radius: var(--radius-md); }
+    .message-avatar { width: 40px; height: 40px; border-radius: 50%; margin: 0 16px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 600; }
+    .message.user .message-avatar { background: rgba(255,255,255,0.2); color: white; }
+    .message.ai .message-avatar { background: linear-gradient(135deg, var(--ai-blue), #60a5fa); color: white; }
+    
+    .quick-suggestions { 
+      padding: 20px 24px; 
+      background: rgba(18,40,33,0.8); 
+      border-top: 1px solid var(--border-soft); 
+      display: flex; 
+      gap: 12px; 
+      flex-wrap: wrap; 
+    }
+    .quick-btn { 
+      padding: 12px 20px; 
+      border-radius: var(--radius-pill); 
+      border: 1px solid var(--border-soft); 
+      background: none; 
+      color: var(--text-muted); 
+      font-size: 14px; 
+      cursor: pointer; 
+      transition: all 0.3s; 
+      font-weight: 500;
+    }
+    .quick-btn:hover { 
+      background: linear-gradient(135deg, var(--ai-blue), #60a5fa); 
+      color: white; 
+      border-color: var(--ai-blue); 
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(59,130,246,0.3);
+    }
+    
+    @keyframes slideIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    @media (max-width: 768px) { .message-bubble { max-width: 90%; } .nav-main-links { display: none; } .page { margin: 12px; padding: 16px; height: calc(100vh - 24px); } }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header class="nav">
+      <div class="nav-left">
+        <div class="logo">L</div>
+        <div class="brand">
+          <span class="brand-title">LockIn</span>
+          <span class="brand-sub">AI Study Focus App</span>
+        </div>
+        <nav class="nav-main-links">
+          <a href="index.html" class="nav-link">Overview</a>
+          <a href="study.html" class="nav-link">Study Area</a>
+          <a href="ai.html" class="nav-link active">AI Assistant</a>
+          <a href="store.html" class="nav-link">Store</a>
+          <a href="dashboard.html" class="nav-link">Dashboard</a>
+          <a href="about.html" class="nav-link">About</a>
+        </nav>
+      </div>
+      <div class="nav-right">
+        <a href="study.html" class="nav-link">📚 Study Now</a>
+      </div>
+    </header>
+
+    <div class="ai-header">
+      <h1 class="ai-title">AI Study Assistant</h1>
+      <p class="ai-subtitle">Click any button below for detailed study help, tips, and motivation! 🚀</p>
+    </div>
+
+    <div class="chat-container">
+      <div class="chat-messages" id="chatMessages">
+        <div class="message ai">
+          <div class="message-avatar">🤖</div>
+          <div class="message-bubble">
+            <strong>LockIn AI:</strong> Ready to help you master your studies! Click any button below for detailed explanations, study strategies, or motivation. Every response is unique! 📚✨
+          </div>
+        </div>
+      </div>
+
+      <!-- ✅ شلت Math و Science - باقي 4 أزرار بس -->
+      <div class="quick-suggestions">
+        <button class="quick-btn" onclick="sendAutoMessage('study')">📚 Study Tips</button>
+        <button class="quick-btn" onclick="sendAutoMessage('motivate')">💪 Motivate</button>
+        <button class="quick-btn" onclick="sendAutoMessage('exam')">🎯 Exam Prep</button>
+        <button class="quick-btn" onclick="sendAutoMessage('focus')">🧠 Focus Tips</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let responseIndex = { study: 0, motivate: 0, exam: 0, focus: 0 };
+
+    const aiResponses = {
+      study: [
+        `📚 <strong>Advanced Study System:</strong><br><br>
+        <strong>Pomodoro 2.0:</strong><br>
+        50min study → 10min break<br>
+        After 4 cycles → 30min long break<br><br>
+        
+        <strong>Active Learning:</strong><br>
+        • Feynman Technique: Explain simply<br>
+        • Spaced repetition: Review Day 1,3,7,14<br>
+        • Interleaved practice: Mix topics<br><br>
+        
+        🧠 <strong>Environment:</strong> Same desk, no phone, white noise`,
+        
+        `🎯 <strong>Memory Palace Method:</strong><br><br>
+        1. Visualize familiar location<br>
+        2. Place concepts at locations<br>
+        3. Mental walk-through for recall<br><br>
+        
+        <strong>Example:</strong> Kitchen → Periodic table<br>
+        • Fridge = Group 1 (alkali metals)<br>
+        • Oven = Group 17 (halogens)<br><br>
+        
+        🏰 Works for speeches, formulas, dates!`,
+        
+        `⏰ <strong>Time Blocking:</strong><br><br>
+        Schedule specific subjects by energy:<br>
+        8-10AM: Math (peak focus)<br>
+        2-4PM: Reading (afternoon dip)<br>
+        7-9PM: Review (consolidation)<br><br>
+        
+        📅 Use Google Calendar with colors!`
+      ],
+      
+      motivate: [
+        `💥 <strong>You're Unstoppable:</strong><br><br>
+        "The expert in anything was once a beginner." – Helen Hayes<br><br>
+        <strong>Reality Check:</strong><br>
+        • Einstein failed math? Myth!<br>
+        • J.K. Rowling rejected 12 times<br>
+        • Every PhD had imposter syndrome<br><br>
+        
+        🚀 <strong>Action Now:</strong> 5 minutes = momentum. Start small, win big!`,
+        
+        `🔥 <strong>Mindset Shift:</strong><br><br>
+        <strong>Growth Mindset:</strong><br>
+        "I can't do it YET" > "I'm not smart"<br><br>
+        <strong>3 Wins Today:</strong><br>
+        ✓ Study 1 chapter<br>
+        ✓ Solve 10 problems<br>
+        ✓ Sleep 8 hours<br><br>
+        
+        🏆 Future you = compound interest of daily effort!`,
+        
+        `⚡ <strong>Energy Hack:</strong><br><br>
+        Dopamine stacking:<br>
+        1. Make bed (instant win)<br>
+        2. Cold shower (energy spike)<br>
+        3. Study block (momentum)<br><br>
+        
+        🎵 Music: Instrumental/lo-fi beats<br>
+        ☕ Coffee: 1 cup max`
+      ],
+      
+      exam: [
+        `📝 <strong>Exam Domination Plan:</strong><br><br>
+        <strong>D-1 Prep:</strong><br>
+        • Review summaries only<br>
+        • Past papers ×3<br>
+        • Sleep > cramming<br><br>
+        
+        <strong>Exam Day:</strong><br>
+        1. Skim entire paper first<br>
+        2. Easy questions first<br>
+        3. Show partial work<br>
+        4. Guess intelligently<br><br>
+        
+        🧠 <strong>Breathing:</strong> 4-7-8 technique for nerves`,
+        
+        `🎓 <strong>Question Analysis:</strong><br><br>
+        <strong>Command Words:</strong><br>
+        • Define: 1 sentence<br>
+        • Explain: Cause+effect<br>
+        • Evaluate: Pros+cons+conclusion<br>
+        • Calculate: Show steps<br><br>
+        
+        <strong>Time Management:</strong><br>
+        Total marks ÷ total time = marks/minute<br>
+        Skip & return if stuck!`,
+        
+        `✅ <strong>Post-Exam:</strong><br><br>
+        Don't discuss answers immediately<br>
+        Mental detox: Walk, music, no screens<br>
+        Focus on next exam<br><br>
+        
+        📊 Track progress: Mock scores up? You're winning!`
+      ],
+      
+      focus: [
+        `🧠 <strong>Deep Focus Blueprint:</strong><br><br>
+        <strong>Pre-Work Ritual (5min):</strong><br>
+        1. Clear desk completely<br>
+        2. Phone → airplane mode<br>
+        3. 1-minute breathing<br>
+        4. Write exact task<br><br>
+        
+        <strong>During:</strong><br>
+        • Website blocker<br>
+        • 90min cycles max<br>
+        • No multitasking<br><br>
+        
+        🎯 Single tab only!`,
+        
+        `🚫 <strong>Distraction Killers:</strong><br><br>
+        <strong>Phone:</strong> Different room<br>
+        <strong>Notifications:</strong> OFF<br>
+        <strong>Social media:</strong> 2hr block<br><br>
+        
+        <strong>Mindset:</strong><br>
+        "This is my focus hour. Nothing else matters."<br><br>
+        
+        ⏳ Freedom app + RescueTime tracking`,
+        
+        `🌿 <strong>Brain Fuel:</strong><br><br>
+        <strong>Hydration:</strong> 3L water daily<br>
+        <strong>Movement:</strong> 10min walk/hour<br>
+        <strong>Nutrition:</strong> Nuts, dark chocolate, berries<br><br>
+        
+        <strong>Sleep hygiene:</strong><br>
+        No screens 1hr before bed<br>
+        Cool, dark room = deep sleep`
+      ]
+    };
+
+    function sendAutoMessage(topic) {
+      addMessage(`User clicked: ${topic.toUpperCase()}`, 'user');
+      document.querySelectorAll('.quick-btn').forEach(btn => btn.disabled = true);
+      
+      setTimeout(() => {
+        const responses = aiResponses[topic];
+        const index = responseIndex[topic] % responses.length;
+        const response = responses[index];
+        
+        addMessage(response, 'ai');
+        responseIndex[topic]++;
+        document.querySelectorAll('.quick-btn').forEach(btn => btn.disabled = false);
+      }, 1500);
+    }
+
+    function addMessage(text, sender) {
+      const messages = document.getElementById('chatMessages');
+      const messageDiv = document.createElement('div');
+      messageDiv.className = `message ${sender}`;
+      
+      messageDiv.innerHTML = `
+        <div class="message-avatar">${sender === 'user' ? '👤' : '🤖'}</div>
+        <div class="message-bubble">${text}</div>
+      `;
+      
+      messages.appendChild(messageDiv);
+      messages.scrollTop = messages.scrollHeight;
+    }
+  </script>
+</body>
+</html>

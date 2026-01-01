@@ -1,0 +1,99 @@
+* {
+  box-sizing: border-box;
+  font-family: system-ui, sans-serif;
+}
+
+body {
+  margin: 0;
+  background: #0f172a;
+  color: #f9fafb;
+}
+
+.screen {
+  min-height: 100vh;
+  padding: 20px;
+}
+
+.hidden {
+  display: none;
+}
+
+h1, h2 {
+  margin: 0 0 12px;
+}
+
+.card {
+  background: #111827;
+  border-radius: 12px;
+  padding: 16px;
+  margin: 12px 0;
+  max-width: 360px;
+}
+
+input {
+  width: 100%;
+  padding: 8px 10px;
+  margin: 6px 0;
+  border-radius: 8px;
+  border: 1px solid #374151;
+  background: #020617;
+  color: #f9fafb;
+}
+
+button {
+  padding: 8px 14px;
+  border-radius: 999px;
+  border: none;
+  background: #22c55e;
+  color: #022c22;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 8px;
+}
+
+button.secondary {
+  background: #4b5563;
+  color: #e5e7eb;
+}
+
+button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.dashboard {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+#timer-display {
+  font-size: 32px;
+  font-weight: 700;
+  margin: 8px 0 4px;
+}
+
+#focus-status {
+  font-weight: 600;
+}
+
+#focus-status.distracted {
+  color: #f97316;
+}
+
+#focus-status.focused {
+  color: #4ade80;
+}

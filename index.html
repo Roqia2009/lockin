@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>LockIn - AI Study Focus App</title>
+  <style>
+    :root {
+      --bg-dark: #0b1c18; --bg-card: #122821; --accent: #d2b48c;
+      --accent-light: #f5e7cf; --text-main: #f7f7f2; --text-muted: #b4b7b0;
+      --btn-green: #2f7d5a; --btn-green-dark: #256348; --border-soft: rgba(255,255,255,0.06);
+      --radius-lg: 20px; --radius-md: 12px; --radius-pill: 999px;
+      --ai-blue: #3b82f6; --ai-bg: rgba(59,130,246,0.1);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, sans-serif; }
+    body { background: radial-gradient(circle at top left, #1f3b31 0, #050b09 45%, #020403 100%); color: var(--text-main); min-height: 100vh; }
+    .page { width: 100%; max-width: 1100px; margin: 24px auto; padding: 24px 16px 48px; background: linear-gradient(145deg, rgba(15,35,28,0.96), rgba(5,11,9,0.98)); border-radius: 24px; border: 1px solid rgba(255,255,255,0.09); box-shadow: 0 24px 64px rgba(0,0,0,0.75), 0 0 0 1px rgba(255,255,255,0.02); display: flex; flex-direction: column; height: calc(100vh - 48px); }
+    
+    .nav { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 24px; flex-wrap: wrap; }
+    .nav-left { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+    .logo { width: 36px; height: 36px; border-radius: 14px; background: radial-gradient(circle at 30% 20%, #e2fbe8 0, #58b279 36%, #163226 100%); display: flex; align-items: center; justify-content: center; font-weight: 700; color: var(--bg-dark); box-shadow: 0 8px 24px rgba(0,0,0,0.45); flex-shrink: 0; }
+    .brand { display: flex; flex-direction: column; gap: 2px; }
+    .brand-title { font-weight: 700; letter-spacing: 0.03em; font-size: 15px; }
+    .nav-main-links { display: flex; gap: 14px; flex-wrap: wrap; font-size: 13px; }
+    .nav-link { color: var(--text-muted); text-decoration: none; padding: 8px 16px; border-radius: var(--radius-md); transition: all 0.2s; display: inline-block; }
+    .nav-link:hover { background: rgba(210,180,140,0.1); color: var(--text-main); }
+    .nav-link.active { color: var(--text-main); font-weight: 600; background: rgba(210,180,140,0.15); }
+    
+    .hero { text-align: center; flex: 1; display: flex; flex-direction: column; justify-content: center; padding: 0 20px; }
+    .hero-title { font-size: 48px; font-weight: 700; line-height: 1.2; margin-bottom: 20px; background: linear-gradient(135deg, var(--ai-blue), var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .hero-subtitle { font-size: 18px; color: var(--text-muted); max-width: 700px; margin: 0 auto 40px; line-height: 1.6; }
+    
+    .cta-section { display: flex; gap: 24px; justify-content: center; flex-wrap: wrap; margin-bottom: 48px; }
+    .cta-btn { padding: 20px 40px; border-radius: var(--radius-lg); text-decoration: none; font-size: 18px; font-weight: 600; transition: all 0.3s; display: inline-flex; align-items: center; gap: 12px; }
+    .cta-primary { background: linear-gradient(135deg, var(--btn-green), var(--btn-green-dark)); color: white; box-shadow: 0 20px 40px rgba(47,125,90,0.3); }
+    .cta-primary:hover { transform: translateY(-4px); box-shadow: 0 28px 60px rgba(47,125,90,0.5); }
+    .cta-secondary { color: var(--text-main); border: 2px solid var(--border-soft); background: rgba(255,255,255,0.05); }
+    .cta-secondary:hover { border-color: var(--accent); background: rgba(210,180,140,0.15); }
+    
+    @media (max-width: 768px) { 
+      .nav-main-links { display: none; } 
+      .page { margin: 12px; padding: 16px; height: calc(100vh - 24px); } 
+      .hero-title { font-size: 36px; } 
+      .cta-section { flex-direction: column; align-items: center; }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <!-- ✅ Nav كامل -->
+    <header class="nav">
+      <div class="nav-left">
+        <div class="logo">L</div>
+        <div class="brand">
+          <span class="brand-title">LockIn</span>
+          <span class="brand-sub">AI Study Focus App</span>
+        </div>
+        <nav class="nav-main-links">
+          <a href="index.html" class="nav-link active">Overview</a>
+          <a href="study.html" class="nav-link">Study Area</a>
+          <a href="ai.html" class="nav-link">AI Assistant</a>
+          <a href="store.html" class="nav-link">Store</a>
+          <a href="dashboard.html" class="nav-link">Dashboard</a>
+          <a href="about.html" class="nav-link">About</a>
+          <!-- ✅ Account شغال -->
+          <a href="#" class="nav-link" id="accountLink" onclick="handleAccount()">Account</a>
+        </nav>
+      </div>
+      <div class="nav-right">
+        <a href="study.html" class="nav-link">📚 Study Now</a>
+      </div>
+    </header>
+
+    <!-- ✅ Hero بس -->
+    <section class="hero">
+      <h1 class="hero-title">Lock In. Level Up. Graduate.</h1>
+      <p class="hero-subtitle">The AI-powered study app that eliminates distractions, maximizes focus, and turns study sessions into results. Join 50K+ students mastering their goals.</p>
+      
+      <div class="cta-section">
+        <a href="#" class="cta-btn cta-primary" onclick="handleAccount()">
+          🚀 Get Started Free
+        </a>
+        <a href="#" class="cta-btn cta-secondary" onclick="handleAccount()">
+          👤 Login / Sign Up
+        </a>
+      </div>
+    </section>
+
+    <!-- ✅ شيلت الـFeatures كلها -->
+  </div>
+
+  <script>
+    // ✅ Auth Logic
+    function getUsers() {
+      return JSON.parse(localStorage.getItem('lockin_users') || '[]');
+    }
+
+    function saveUsers(users) {
+      localStorage.setItem('lockin_users', JSON.stringify(users));
+    }
+
+    function checkAuthStatus() {
+      const user = localStorage.getItem('lockin_user');
+      const accountLink = document.getElementById('accountLink');
+      
+      if (user) {
+        const userData = JSON.parse(user);
+        accountLink.textContent = `Hi ${userData.name.split(' ')[0]}`;
+        accountLink.href = 'dashboard.html';
+        accountLink.onclick = null;
+        accountLink.classList.add('active');
+      } else {
+        accountLink.textContent = 'Account';
+        accountLink.href = 'auth.html';
+      }
+    }
+
+    function handleAccount() {
+      const user = localStorage.getItem('lockin_user');
+      if (user) {
+        window.location.href = 'dashboard.html';
+      } else {
+        window.location.href = 'auth.html';
+      }
+    }
+
+    // ✅ Load + Auth check
+    window.addEventListener('load', function() {
+      checkAuthStatus();
+      const user = localStorage.getItem('lockin_user');
+      if (user) {
+        setTimeout(() => window.location.href = 'dashboard.html', 500);
+      }
+    });
+  </script>
+</body>
+</html>
